@@ -1,6 +1,7 @@
 package com.example.myapplication.di
 
 import android.content.Context
+import com.example.myapplication.Room.myDatabase
 import com.example.myapplication.data.Api
 import com.example.myapplication.data.RepoImpl
 import dagger.Module
@@ -31,6 +32,12 @@ class AppModule {
     @Singleton
     fun provideRepo(api: Api, @ApplicationContext context: Context): RepoImpl {
         return RepoImpl(api, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context): myDatabase {
+        return myDatabase.getDatabase(context)
     }
 
 }
