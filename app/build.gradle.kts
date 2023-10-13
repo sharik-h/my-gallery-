@@ -84,4 +84,16 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.5.1")
     kapt ("androidx.room:room-compiler:2.5.1")
     androidTestImplementation ("androidx.room:room-testing:2.5.1")
+
+//     Coil
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+//     livedata
+    implementation("androidx.compose.runtime:runtime-livedata:1.4.3")
+
+//     Swipe
+    implementation ("me.saket.swipe:swipe:1.0.0")
+
+//    Navigation
+    implementation("androidx.navigation:navigation-compose:2.6.0-alpha04")
 }
