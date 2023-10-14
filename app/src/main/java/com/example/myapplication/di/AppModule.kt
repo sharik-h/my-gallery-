@@ -1,9 +1,14 @@
 package com.example.myapplication.di
 
 import android.content.Context
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.example.myapplication.Room.myDatabase
 import com.example.myapplication.data.Api
 import com.example.myapplication.data.RepoImpl
+import com.example.myapplication.model.imagesItem
+import com.example.myapplication.paging.ImageRemoteMediator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -40,4 +45,14 @@ class AppModule {
         return myDatabase.getDatabase(context)
     }
 
+    @OptIn(ExperimentalPagingApi::class)
+    @Provides
+    @Singleton
+    fun providesImgPager(room: myDatabase, api: Api): Pager<Int, imagesItem>{
+        return Pager(
+            config = PagingConfig(pageSize = 60),
+            remoteMediator = ImageRemoteMediator(room, api),
+            pagingSourceFactory = { room.dao.getAllImgs() }
+        )
+    }
 }

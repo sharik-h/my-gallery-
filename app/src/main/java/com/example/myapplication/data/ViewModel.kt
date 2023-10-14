@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.myapplication.Room.RoomRepo
@@ -18,7 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ViewModel @Inject constructor(
     private val repoImpl: RepoImpl,
-    private val room: RoomRepo): ViewModel() {
+    private val room: RoomRepo,
+    private val pager: Pager<Int, imagesItem>
+    ): ViewModel() {
 
     private val _images = MutableLiveData<List<imagesItem>>()
     val images: LiveData<List<imagesItem>> get() = _images
@@ -31,6 +34,9 @@ class ViewModel @Inject constructor(
 
     private val _imgs: MutableStateFlow<PagingData<imagesItem>> = MutableStateFlow(value = PagingData.empty())
     val imgs: MutableStateFlow<PagingData<imagesItem>> get() = _imgs
+
+    val imgFlow = pager.flow
+        .cachedIn(viewModelScope)
 
     init {
         getMovies()

@@ -1,5 +1,6 @@
 package com.example.myapplication.Room
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -12,6 +13,14 @@ interface Dao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllImg(images: List<imagesItem>)
+
+    // this
+    @Query("DELETE FROM imagesItem")
+    suspend fun clearAll()
+
+    // and this
+    @Query("SELECT * FROM imagesItem")
+    fun getAllImgs(): PagingSource<Int, imagesItem>
 
     @Insert
     suspend fun addNewImage(image: imagesItem)

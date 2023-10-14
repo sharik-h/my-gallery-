@@ -1,11 +1,20 @@
 package com.example.myapplication.Room
 
+import androidx.paging.PagingSource
 import com.example.myapplication.model.imagesItem
 import javax.inject.Inject
 
 class RoomRepo @Inject constructor(private val db: myDatabase): Dao {
     override fun addAllImg(images: List<imagesItem>) {
         db.dao.addAllImg(images)
+    }
+
+    override suspend fun clearAll() {
+        db.dao.clearAll()
+    }
+
+    override fun getAllImgs(): PagingSource<Int, imagesItem> {
+        return db.dao.getAllImgs()
     }
 
     override suspend fun addNewImage(image: imagesItem) {

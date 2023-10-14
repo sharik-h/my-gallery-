@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.ViewModel
@@ -67,6 +68,7 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
     var viewbyList by remember { mutableStateOf(false) }
     var viewImage = if (viewbyList) painterResource(id = R.drawable.grid_view)
                     else painterResource(id = R.drawable.list_view)
+    val imageFlow = viewModel.imgFlow.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = { 
@@ -93,31 +95,36 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                     modifier = Modifier.padding(horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    items(imgss.itemCount) { index ->
 
-                        // swipe api used to perform delete function
-                        val delete = SwipeAction(
-                            onSwipe = { viewModel.deleteImage(imgss[index]!!) },
-                            icon = {
-                                Icon(
-                                    modifier = Modifier.padding(16.dp),
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = " ",
-                                    tint = Color.White
-                                )
-                            },
-                            background = Color.Red
-                        )
-                        SwipeableActionsBox(
-                            endActions = listOf(delete),
-                            swipeThreshold = 120.dp,
-                            modifier = Modifier.clip(RoundedCornerShape(25)),
-                            backgroundUntilSwipeThreshold = Color.LightGray
-                        ) {
+                    items(imageFlow) {
 
-                            listViewBox(image = imgss[index]!!) {
-                                viewModel.setAsViewing(imgss[index]!!)
-                                navController.navigate(Screen.detailPage.route)
+                        it?.let {
+
+
+                            val delete = SwipeAction(
+                                onSwipe = { viewModel.deleteImage(it) },
+                                icon = {
+                                    Icon(
+                                        modifier = Modifier.padding(16.dp),
+                                        imageVector = Icons.Default.Delete,
+                                        contentDescription = " ",
+                                        tint = Color.White
+                                    )
+                                },
+                                background = Color.Red
+                            )
+                            // swipe api used to perform delete function
+                            SwipeableActionsBox(
+                                endActions = listOf(delete),
+                                swipeThreshold = 120.dp,
+                                modifier = Modifier.clip(RoundedCornerShape(25)),
+                                backgroundUntilSwipeThreshold = Color.LightGray
+                            ) {
+
+                                listViewBox(image = it) {
+                                    viewModel.setAsViewing(it)
+                                    navController.navigate(Screen.detailPage.route)
+                                }
                             }
                         }
                     }
@@ -129,12 +136,12 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(horizontal = 10.dp)
                     ) {
-                        items(imgss.itemCount) {
+                        items(imageFlow.itemCount) {
                             gridViewBox(
-                                image = imgss[it]!!,
-                                onDelete = {viewModel.deleteImage(imgss[it]!!) },
+                                image = imageFlow[it]!!,
+                                onDelete = {viewModel.deleteImage(imageFlow[it]!!) },
                                 onclick = {
-                                    viewModel.setAsViewing(imgss[it]!!)
+                                    viewModel.setAsViewing(imageFlow[it]!!)
                                     navController.navigate(Screen.detailPage.route)
                                 }
                             )
