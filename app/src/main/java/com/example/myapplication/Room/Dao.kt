@@ -3,11 +3,15 @@ package com.example.myapplication.Room
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.myapplication.model.imagesItem
 
 @Dao
 interface Dao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun addAllImg(images: List<imagesItem>)
 
     @Insert
     suspend fun addNewImage(image: imagesItem)

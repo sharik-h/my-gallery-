@@ -4,6 +4,9 @@ import com.example.myapplication.model.imagesItem
 import javax.inject.Inject
 
 class RoomRepo @Inject constructor(private val db: myDatabase): Dao {
+    override fun addAllImg(images: List<imagesItem>) {
+        db.dao.addAllImg(images)
+    }
 
     override suspend fun addNewImage(image: imagesItem) {
         db.dao.addNewImage(image)

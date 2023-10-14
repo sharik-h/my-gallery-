@@ -5,9 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.myapplication.Room.RoomRepo
 import com.example.myapplication.model.imagesItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,25 +27,25 @@ class ViewModel @Inject constructor(
     private val _newImage = mutableStateOf(imagesItem("", "", "", "", "", ""))
     val newImage = _newImage
 
+
+
+    private val _imgs: MutableStateFlow<PagingData<imagesItem>> = MutableStateFlow(value = PagingData.empty())
+    val imgs: MutableStateFlow<PagingData<imagesItem>> get() = _imgs
+
     init {
-        getEntirePage(page = 1, limit = 30)
+        getMovies()
     }
 
-    private fun getEntirePage(page: Int, limit: Int) {
+    private fun getMovies() {
         viewModelScope.launch {
-            val imagesFromServer = repoImpl.getEntirePage(page, limit)
-
-            // checks and add new item only if it doesnt exist in the database
-            for(image in imagesFromServer){
-                val alreadyExist = room.getImageById(image.id)
-                if (alreadyExist == null) {
-                    room.addNewImage(image)
+            repoImpl.getimgs()
+                .distinctUntilChanged()
+                .cachedIn(viewModelScope)
+                .collect {
+                    _imgs.value = it
                 }
-            }
-            updateImages(room.getAllImage())
         }
     }
-
 
     private fun isAllFeildOk(): Boolean {
         return newImage.value?.author != null &&

@@ -1,23 +1,23 @@
 package com.example.myapplication.data
 
-import android.content.Context
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.example.myapplication.model.imagesItem
-import com.example.myapplication.utils.NetworkUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import com.example.myapplication.paging.ImagePagingSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
-class RepoImpl @Inject constructor(private val api: Api, private val context: Context) : Repo {
+class RepoImpl @Inject constructor(private val api: Api) : Repo {
 
-    override suspend fun getEntirePage(page: Int, limit: Int): List<imagesItem> {
-        if (NetworkUtils.isNetworkAvailable(context)){
-            return withContext(Dispatchers.IO){
-                api.getEntirePage(page.toString(), limit.toString()).execute().body() ?: emptyList()
+    override suspend fun getimgs(): Flow<PagingData<imagesItem>> {
+        return Pager(
+            config = PagingConfig(pageSize = 10, prefetchDistance = 2),
+            pagingSourceFactory = {
+                ImagePagingSource(api)
             }
-        }else {
-            return emptyList()
-        }
+        ).flow
     }
 
 }

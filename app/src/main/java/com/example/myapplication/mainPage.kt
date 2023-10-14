@@ -19,10 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -38,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,6 +49,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.data.ViewModel
@@ -64,8 +63,7 @@ import me.saket.swipe.SwipeableActionsBox
 @Composable
 fun mainPage(navController: NavController, viewModel: ViewModel) {
 
-    val images = viewModel.images.observeAsState(initial = emptyList())
-    println(images.value.toList())
+    val imgss: LazyPagingItems<imagesItem> = viewModel.imgs.collectAsLazyPagingItems()
     var viewbyList by remember { mutableStateOf(false) }
     var viewImage = if (viewbyList) painterResource(id = R.drawable.grid_view)
                     else painterResource(id = R.drawable.list_view)
@@ -95,18 +93,19 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                     modifier = Modifier.padding(horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-                    items(items = images.value){
-
+                    items(imgss.itemCount) { index ->
 
                         // swipe api used to perform delete function
                         val delete = SwipeAction(
-                            onSwipe = { viewModel.deleteImage(it) },
-                            icon = { Icon(
-                                modifier = Modifier.padding(16.dp),
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = " ",
-                                tint = Color.White
-                            ) },
+                            onSwipe = { viewModel.deleteImage(imgss[index]!!) },
+                            icon = {
+                                Icon(
+                                    modifier = Modifier.padding(16.dp),
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = " ",
+                                    tint = Color.White
+                                )
+                            },
                             background = Color.Red
                         )
                         SwipeableActionsBox(
@@ -116,8 +115,8 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                             backgroundUntilSwipeThreshold = Color.LightGray
                         ) {
 
-                            listViewBox(image = it){
-                                viewModel.setAsViewing(it)
+                            listViewBox(image = imgss[index]!!) {
+                                viewModel.setAsViewing(imgss[index]!!)
                                 navController.navigate(Screen.detailPage.route)
                             }
                         }
@@ -130,12 +129,12 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.padding(horizontal = 10.dp)
                     ) {
-                        items(images.value) {
+                        items(imgss.itemCount) {
                             gridViewBox(
-                                image = it,
-                                onDelete = {viewModel.deleteImage(it) },
+                                image = imgss[it]!!,
+                                onDelete = {viewModel.deleteImage(imgss[it]!!) },
                                 onclick = {
-                                    viewModel.setAsViewing(it)
+                                    viewModel.setAsViewing(imgss[it]!!)
                                     navController.navigate(Screen.detailPage.route)
                                 }
                             )
@@ -158,6 +157,7 @@ fun listViewBox(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp),
+        color = Color(0xFFB6B6B6),
         shadowElevation = 3.dp,
         shape = RoundedCornerShape(25)
     ) {
@@ -192,6 +192,7 @@ fun gridViewBox(image: imagesItem, onDelete: () -> Unit, onclick: () -> Unit) {
 
     Surface(
         shape = RoundedCornerShape(15),
+        color = Color.LightGray,
         modifier = Modifier
             .pointerInput(Unit) {
                 detectTapGestures(
