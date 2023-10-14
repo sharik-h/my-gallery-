@@ -1,4 +1,4 @@
-package com.example.myapplication
+package com.example.myapplication.pages
 
 
 
@@ -53,6 +53,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.example.myapplication.R
 import com.example.myapplication.data.ViewModel
 import com.example.myapplication.model.imagesItem
 import com.example.myapplication.navigation.Screen
