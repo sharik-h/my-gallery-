@@ -30,8 +30,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideRepo(api: Api, @ApplicationContext context: Context): RepoImpl {
-        return RepoImpl(api, context)
+    fun provideRepo(api: Api): RepoImpl {
+        return RepoImpl(api)
     }
 
     @Provides
