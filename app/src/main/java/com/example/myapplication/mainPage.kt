@@ -49,7 +49,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.AsyncImage
@@ -64,9 +63,8 @@ import me.saket.swipe.SwipeableActionsBox
 @Composable
 fun mainPage(navController: NavController, viewModel: ViewModel) {
 
-    val imgss: LazyPagingItems<imagesItem> = viewModel.imgs.collectAsLazyPagingItems()
     var viewbyList by remember { mutableStateOf(false) }
-    var viewImage = if (viewbyList) painterResource(id = R.drawable.grid_view)
+    val viewImage = if (viewbyList) painterResource(id = R.drawable.grid_view)
                     else painterResource(id = R.drawable.list_view)
     val imageFlow = viewModel.imgFlow.collectAsLazyPagingItems()
 
@@ -95,12 +93,8 @@ fun mainPage(navController: NavController, viewModel: ViewModel) {
                     modifier = Modifier.padding(horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(5.dp)
                 ) {
-
                     items(imageFlow) {
-
                         it?.let {
-
-
                             val delete = SwipeAction(
                                 onSwipe = { viewModel.deleteImage(it) },
                                 icon = {

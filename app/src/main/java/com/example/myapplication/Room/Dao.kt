@@ -14,24 +14,15 @@ interface Dao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun addAllImg(images: List<imagesItem>)
 
-    // this
     @Query("DELETE FROM imagesItem")
     suspend fun clearAll()
 
-    // and this
     @Query("SELECT * FROM imagesItem")
     fun getAllImgs(): PagingSource<Int, imagesItem>
 
     @Insert
     suspend fun addNewImage(image: imagesItem)
 
-    @Query("SELECT * FROM imagesItem ORDER BY id ASC")
-    suspend fun getAllImage(): List<imagesItem>
-
     @Delete
     suspend fun deleteAImage(image: imagesItem)
-
-    @Query("SELECT * FROM imagesItem WHERE id = :itemId")
-    suspend fun getImageById(itemId: String): imagesItem?
-
 }

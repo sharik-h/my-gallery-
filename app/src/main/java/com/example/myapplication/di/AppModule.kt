@@ -6,7 +6,6 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.example.myapplication.Room.myDatabase
 import com.example.myapplication.data.Api
-import com.example.myapplication.data.RepoImpl
 import com.example.myapplication.model.imagesItem
 import com.example.myapplication.paging.ImageRemoteMediator
 import dagger.Module
@@ -31,12 +30,6 @@ class AppModule {
             .baseUrl("https://picsum.photos/v2/")
             .build()
             .create(Api::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideRepo(api: Api): RepoImpl {
-        return RepoImpl(api)
     }
 
     @Provides

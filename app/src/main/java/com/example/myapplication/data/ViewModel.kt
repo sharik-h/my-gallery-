@@ -6,19 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.myapplication.Room.RoomRepo
 import com.example.myapplication.model.imagesItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ViewModel @Inject constructor(
-    private val repoImpl: RepoImpl,
     private val room: RoomRepo,
     private val pager: Pager<Int, imagesItem>
     ): ViewModel() {
@@ -29,29 +25,8 @@ class ViewModel @Inject constructor(
     val imageViewing: LiveData<imagesItem> get() = _imageViewing
     private val _newImage = mutableStateOf(imagesItem("", "", "", "", "", ""))
     val newImage = _newImage
+    val imgFlow = pager.flow.cachedIn(viewModelScope)
 
-
-
-    private val _imgs: MutableStateFlow<PagingData<imagesItem>> = MutableStateFlow(value = PagingData.empty())
-    val imgs: MutableStateFlow<PagingData<imagesItem>> get() = _imgs
-
-    val imgFlow = pager.flow
-        .cachedIn(viewModelScope)
-
-    init {
-        getMovies()
-    }
-
-    private fun getMovies() {
-        viewModelScope.launch {
-            repoImpl.getimgs()
-                .distinctUntilChanged()
-                .cachedIn(viewModelScope)
-                .collect {
-                    _imgs.value = it
-                }
-        }
-    }
 
     private fun isAllFeildOk(): Boolean {
         return newImage.value?.author != null &&
@@ -75,9 +50,6 @@ class ViewModel @Inject constructor(
         updateNewImage("height", "")
         updateNewImage("url", "")
         updateNewImage("download_url", "")
-    }
-    fun updateImages(images: List<imagesItem>){
-        _images.value = images
     }
 
     fun deleteImage(image: imagesItem) {

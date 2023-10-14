@@ -21,15 +21,7 @@ class RoomRepo @Inject constructor(private val db: myDatabase): Dao {
         db.dao.addNewImage(image)
     }
 
-    override suspend fun getAllImage(): List<imagesItem> {
-        return db.dao.getAllImage()
-    }
-
     override suspend fun deleteAImage(image: imagesItem) {
         return db.dao.deleteAImage(image)
-    }
-
-    override suspend fun getImageById(itemId: String): imagesItem? {
-        return db.dao.getImageById(itemId)
     }
 }
