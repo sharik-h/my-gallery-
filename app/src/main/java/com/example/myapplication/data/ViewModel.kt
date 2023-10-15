@@ -33,18 +33,22 @@ class ViewModel @Inject constructor(
                 newImage.value?.width != null &&
                 newImage.value?.height != null &&
                 newImage.value?.url != null &&
-                newImage.value?.download_url != null
+                newImage.value?.download_url != null &&
+                newImage.value?.id!!.isNotEmpty()
     }
     fun addNewImage(){
         if (isAllFeildOk()){
+            println(newImage)
             viewModelScope.launch {
-                room.addNewImage(_newImage.value!!)
+                println("inside")
+                room.addNewImage(newImage.value!!)
             }
           clearNewImage()
         }
     }
 
     fun clearNewImage(){
+        updateNewImage("id", "")
         updateNewImage("author", "")
         updateNewImage("width", "")
         updateNewImage("height", "")
@@ -66,6 +70,7 @@ class ViewModel @Inject constructor(
     fun updateNewImage(name: String, value: String){
         _newImage.let {
             when(name){
+                "id" -> it.value = it.value.copy(id = value)
                 "author" -> it.value = it.value.copy(author = value)
                 "width" -> it.value = it.value.copy(width = value)
                 "height" -> it.value = it.value.copy(height = value)

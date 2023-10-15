@@ -56,7 +56,12 @@ fun newImage(navController: NavController, viewModel: ViewModel) {
                 .fillMaxSize()
                 .padding(10.dp)) {
 
-
+                OutlinedTextField(
+                    value = newImage.id,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text(text = "id")},
+                    onValueChange = { viewModel.updateNewImage("id", it) })
+                Spacer(modifier = Modifier.height(10.dp))
                 OutlinedTextField(
                     value = newImage.author,
                     modifier = Modifier.fillMaxWidth(),

@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.myapplication.model.imagesItem
 
-@Database(entities = [imagesItem::class], version = 12, exportSchema = false)
+@Database(entities = [imagesItem::class], version = 16, exportSchema = false)
 abstract class myDatabase: RoomDatabase() {
 
     abstract val dao: Dao

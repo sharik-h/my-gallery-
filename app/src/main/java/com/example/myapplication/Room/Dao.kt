@@ -20,7 +20,7 @@ interface Dao {
     @Query("SELECT * FROM imagesItem")
     fun getAllImgs(): PagingSource<Int, imagesItem>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addNewImage(image: imagesItem)
 
     @Delete
