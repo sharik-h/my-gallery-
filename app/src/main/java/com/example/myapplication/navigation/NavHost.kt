@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.data.ViewModel
 import com.example.myapplication.pages.detailViewPage
-import com.example.myapplication.pages.mainPage
+import com.example.myapplication.pages.MainPage
 import com.example.myapplication.pages.newImage
 
 @Composable
@@ -19,7 +19,7 @@ fun NavHost(
          startDestination = Screen.mainPage.route
      ){
          composable(route = Screen.mainPage.route){
-             mainPage(navController = navHostController, viewModel = viewModel)
+             MainPage(navController = navHostController, viewModel = viewModel)
          }
          composable(route = Screen.detailPage.route){
              detailViewPage(navController = navHostController, viewModel = viewModel)
