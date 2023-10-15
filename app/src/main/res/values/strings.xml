@@ -3,4 +3,6 @@
     <string name="load_more_string">Load More</string>
     <string name="app_title">My Gallery</string>
     <string name="back_text">Back</string>
+    <string name="loading_msg">Fetching data from the server</string>
+    <string name="retry_msg">Retry</string>
 </resources>

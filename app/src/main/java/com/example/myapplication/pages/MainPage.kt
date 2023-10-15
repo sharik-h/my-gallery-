@@ -2,11 +2,8 @@ package com.example.myapplication.pages
 
 
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,8 +19,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -39,22 +34,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
 import com.example.myapplication.R
 import com.example.myapplication.data.ViewModel
-import com.example.myapplication.model.imagesItem
 import com.example.myapplication.navigation.Screen
+import com.example.myapplication.pages.custom.ErrorMessage
+import com.example.myapplication.pages.custom.ImageBox
+import com.example.myapplication.pages.custom.loader
+import com.example.myapplication.pages.custom.nextPageLoader
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -66,6 +61,7 @@ fun MainPage(navController: NavController, viewModel: ViewModel) {
     val viewImage = if (viewbyList != 1) painterResource(id = R.drawable.grid_view)
                     else painterResource(id = R.drawable.list_view)
     val imageFlow = viewModel.imgFlow.collectAsLazyPagingItems()
+    val context = LocalContext.current
 
     Scaffold(
         topBar = { 
@@ -171,65 +167,38 @@ fun MainPage(navController: NavController, viewModel: ViewModel) {
                         }
                     }
                 }
-            }
-        }
-    }
-}
+                imageFlow.apply {
+                    when {
+                       loadState.refresh is LoadState.Loading -> {
+                           item {
+                               loader(modifier = Modifier.fillMaxSize())
+                           }
+                       }
+                       loadState.refresh is LoadState.Error -> {
+                           val error = imageFlow.loadState.refresh as LoadState.Error
+                           item {
+                               ErrorMessage(
+                                   modifier = Modifier.fillMaxSize(),
+                                   message = error.error.localizedMessage!!,
+                                   onClickRetry = { retry() })
+                           }
+                       }
 
+                       loadState.append is LoadState.Loading -> {
+                           item { nextPageLoader(modifier = Modifier) }
+                       }
 
-// UI that holds the image
-@Composable
-fun ImageBox(
-    image: imagesItem,
-    onClick: () -> Unit,
-    onLongPress: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .clip(RoundedCornerShape(8.dp))
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = { onLongPress() },
-                    onTap = { onClick() }
-                )
-            },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp,
-        )
-    ) {
-        val painter = rememberAsyncImagePainter(image.download_url)
-        val transition by animateFloatAsState(
-            targetValue = if (painter.state is AsyncImagePainter.State.Success) 1f else 0f,
-            label = ""
-        )
-        Box(
-            modifier = Modifier
-                .height(150.dp)
-                .fillMaxWidth()
-        ) {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(8.dp))
-                    .alpha(transition)
-            )
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-                    .align(Alignment.TopEnd),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "By " + image.author,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.padding(start = 5.dp),
-                    color = Color.White )
+                       loadState.append is LoadState.Error -> {
+                           val error = imageFlow.loadState.append as LoadState.Error
+                           item {
+                               ErrorMessage(
+                                   modifier = Modifier,
+                                   message = error.error.localizedMessage!!,
+                                   onClickRetry = { retry() })
+                           }
+                       }
+                   }
+               }
             }
         }
     }
