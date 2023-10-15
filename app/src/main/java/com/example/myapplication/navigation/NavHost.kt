@@ -5,9 +5,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.myapplication.data.ViewModel
-import com.example.myapplication.pages.detailViewPage
 import com.example.myapplication.pages.MainPage
+import com.example.myapplication.pages.detailViewPage
 import com.example.myapplication.pages.newImage
+import com.example.myapplication.pages.splashPage
 
 @Composable
 fun NavHost(
@@ -16,7 +17,7 @@ fun NavHost(
 ) {
      NavHost(
          navController = navHostController,
-         startDestination = Screen.mainPage.route
+         startDestination = Screen.splashScreen.route
      ){
          composable(route = Screen.mainPage.route){
              MainPage(navController = navHostController, viewModel = viewModel)
@@ -26,6 +27,9 @@ fun NavHost(
          }
          composable(route = Screen.newImage.route){
              newImage(navController = navHostController, viewModel = viewModel)
+         }
+         composable(route = Screen.splashScreen.route){
+             splashPage(navController = navHostController, viewModel = viewModel)
          }
      }
 }
